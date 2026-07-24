@@ -1,0 +1,17 @@
+{
+    "name": "semilore/csv-import-pipeline",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Semilore\\CsvImportPipeline\\": "src/"
+        }
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
