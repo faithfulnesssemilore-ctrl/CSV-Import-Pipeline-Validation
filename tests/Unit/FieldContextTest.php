@@ -28,3 +28,6 @@ it('does not allow raw to be changed after construction', function () {
     expect(fn () => $field->raw = 'tampered')
         ->toThrow(Error::class);
 });
+
+
+
