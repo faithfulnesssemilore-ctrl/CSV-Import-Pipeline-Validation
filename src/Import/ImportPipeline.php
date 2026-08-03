@@ -99,9 +99,8 @@ final class ImportPipeline
             );
 
             if (!$parseResult->success) {
-                $field->addError($parseResult->error);
-            }
-
+    $field->addError("[parse] {$parseResult->error}");
+}
             $row->setField($fieldName, $field);
         }
 
