@@ -7,6 +7,7 @@ namespace Semilore\CsvImportPipeline\Import;
 use Semilore\CsvImportPipeline\Domain\FieldContext;
 use Semilore\CsvImportPipeline\Domain\RowContext;
 use Semilore\CsvImportPipeline\Import\Deduplication\DuplicateChecker;
+use Semilore\CsvImportPipeline\Import\Logging\LogsImport;
 use Semilore\CsvImportPipeline\Import\Mapping\HeaderMapper;
 use Semilore\CsvImportPipeline\Import\Parsing\ParsesField;
 use Semilore\CsvImportPipeline\Import\Reading\CsvReader;
@@ -32,11 +33,13 @@ final class ImportPipeline
         private readonly string $duplicateCheckField,
         private readonly OutputWriter $outputWriter,
         private readonly RejectWriter $rejectWriter,
-    ) {
+        private readonly LogsImport $logger,
+        ) {
     }
 
     public function run(): ImportReport
     {
+          $this->logger->log('Import started');
         $report = new ImportReport();
         $columnMap = null;
         $rowNumber = 0;
@@ -73,6 +76,13 @@ final class ImportPipeline
 
         $this->outputWriter->close();
         $this->rejectWriter->close();
+        $this->logger->log("Import finished: {$report->importedCount()} imported, {$report->rejectedCount()} rejected");
+
+        $totalRows = $report->importedCount() + $report->rejectedCount();
+
+        if ($totalRows > 0 && ($report->rejectedCount() / $totalRows) > 0.5) {
+            $this->logger->log("WARNING: high rejection rate — {$report->rejectedCount()} of {$totalRows} rows rejected. Possible configuration issue.");
+        }
 
         return $report;
     }
