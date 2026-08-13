@@ -28,8 +28,8 @@ The goal was to design a **multi-stage streaming pipeline** that use a **validat
 To run the project, follow these steps:
 ## 1. Clone the repository to your local machine.
 ```bash 
-git clone [https://github.com/faithfulnesssemilore-ctrl/CSV-Import-Pipeline-Validation.git]
-cd csv-import-pipeline 
+git clone https://github.com/faithfulnesssemilore-ctrl/CSV-Import-Pipeline-Validation.git
+cd CSV-Import-Pipeline-Validation 
 ```
 ## 2. Install the dependencies using Composer.
 ```bash
