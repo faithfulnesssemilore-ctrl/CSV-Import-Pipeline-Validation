@@ -6,7 +6,7 @@ namespace Semilore\CsvImportPipeline\Import\Logging;
 
 final class FileLogger implements LogsImport
 {
-    /** @var resource */
+ 
     private $handle;
 
     public function __construct(string $filePath)

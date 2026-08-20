@@ -8,7 +8,6 @@ final class ImportReport
 {
     private int $importedCount = 0;
 
-    /** @var list<array{row: int, reasons: list<string>}> */
     private array $rejections = [];
 
     public function recordImported(): void

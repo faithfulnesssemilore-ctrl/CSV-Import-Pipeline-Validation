@@ -8,11 +8,7 @@ use RuntimeException;
 
 final class ConfigurationValidator
 {
-    /**
-     * @param array<string, list<string>> $aliases
-     * @param array<string, mixed> $sanitizers
-     * @param array<string, mixed> $parsers
-     */
+  
     public function validate(array $aliases, array $sanitizers, array $parsers, string $duplicateCheckField): void
     {
         $canonicalFields = array_keys($aliases);

@@ -8,18 +8,13 @@ use RuntimeException;
 
 final class HeaderMapper
 {
-    /**
-     * @param array<string, list<string>> $aliases canonical field name => list of accepted header labels
-     */
+   
     public function __construct(
         private readonly array $aliases,
     ) {
     }
 
-    /**
-     * @param list<string> $headerRow the actual header row read from the file
-     * @return array<int, string> column index => canonical field name
-     */
+   
     public function resolve(array $headerRow): array
     {
         $columnMap = [];

@@ -6,7 +6,7 @@ namespace Semilore\CsvImportPipeline\Import\Deduplication;
 
 final class DuplicateChecker
 {
-    /** @var array<string, true> */
+   
     private array $seenKeys = [];
 
     public function __construct(

@@ -5,7 +5,6 @@ namespace Semilore\CsvImportPipeline\Domain;
 
 final class RowContext
 {
-    /** @var array<string, FieldContext> */
     private array $fields = [];
 
     public function __construct(
