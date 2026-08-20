@@ -41,44 +41,33 @@ vendor/bin/pest
 ```
 
 ---
-Architecture Overview
-Configuration
-       |
-       V
-   ConfigurationValidator → validates the import setup before runtime process begins 
-     |
-       V
-CSV Reader(streaming) → Reads the file as a generator 1 row at a time 
+## Architecture Overview
+   Configuration
 |
-  V
+   ConfigurationValidator → validates the import setup before runtime process begins 
+|
+CSV Reader(streaming) → Reads the file as a generator 1 row at a time 
+|   
 HeaderMapper → runs only on the first row of the csv file  
 |
-V
 Sanitizer-> in importpipeline::buildRowContext() each fields value is sanitized using the configured sanitizer for the canonical field 
 |
-       V
 Parsing/canonical - IN buildRowContext(), the sanitize value is parsed i into a single standard accepted  internal name or format 
 |
-       V
 Field/ Row Context– After sanitized + parse, the row is assembled into context  object: FieldContext- holds raw test,Sanitized string,typed value and parse sucess and errors
 RowContext– holds all fields for the row and can answer when the row is valid 
 |
-       v
 Validation  → validates each fields in a row
 |
-       V
 Invalid→Reject writer  ->if the row has any field errors the pipeline will reject it 
 Valid
 |
-       v
 DuplicateChecker→ the pipeline checkers for duplicate using one canonical fields
 |
-       V
 Duplicate →Reject writer → if the duplicate check fails : the row is rejected, and Rejected writer aduit log it 
 
 Unique → if row is valid with no duplication files can proceed to the outpu
 |
-       V
 ImportPipeling report.
 
 
