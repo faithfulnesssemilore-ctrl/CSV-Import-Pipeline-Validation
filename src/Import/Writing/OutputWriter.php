@@ -6,14 +6,21 @@ namespace Semilore\CsvImportPipeline\Import\Writing;
 
 use Semilore\CsvImportPipeline\Domain\RowContext;
 
-final class OutputWriter
+final class OutputWriter implements AcceptedRowWriter
 {
     /** @var resource */
     private $handle;
 
+    /** @param list<string> $fieldOrder */
     public function __construct(string $filePath, private readonly array $fieldOrder)
     {
-        $this->handle = fopen($filePath, 'w');
+        $handle = fopen($filePath, 'w');
+
+        if ($handle === false) {
+            throw new \RuntimeException("Unable to open output CSV: {$filePath}");
+        }
+
+        $this->handle = $handle;
         fputcsv($this->handle, $fieldOrder, ',', '"', '\\');
     }
 

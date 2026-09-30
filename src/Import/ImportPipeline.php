@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Semilore\CsvImportPipeline\Import;
 
+use Closure;
 use Semilore\CsvImportPipeline\Domain\FieldContext;
 use Semilore\CsvImportPipeline\Domain\RowContext;
 use Semilore\CsvImportPipeline\Import\Deduplication\DuplicateChecker;
@@ -14,14 +15,14 @@ use Semilore\CsvImportPipeline\Import\Reading\CsvReader;
 use Semilore\CsvImportPipeline\Import\Reporting\ImportReport;
 use Semilore\CsvImportPipeline\Import\Sanitization\SanitizesField;
 use Semilore\CsvImportPipeline\Import\Validation\ValidationEngine;
-use Semilore\CsvImportPipeline\Import\Writing\OutputWriter;
+use Semilore\CsvImportPipeline\Import\Writing\AcceptedRowWriter;
 use Semilore\CsvImportPipeline\Import\Writing\RejectWriter;
 
 final class ImportPipeline
 {
     /**
-     * @param array<string, SanitizesField> $sanitizers canonical field name => sanitizer
-     * @param array<string, ParsesField> $parsers canonical field name => parser
+     * @param  array<string, SanitizesField>  $sanitizers
+     * @param  array<string, ParsesField>  $parsers
      */
     public function __construct(
         private readonly CsvReader $reader,
@@ -31,16 +32,17 @@ final class ImportPipeline
         private readonly ValidationEngine $validationEngine,
         private readonly DuplicateChecker $duplicateChecker,
         private readonly string $duplicateCheckField,
-        private readonly OutputWriter $outputWriter,
+        private readonly AcceptedRowWriter $outputWriter,
         private readonly RejectWriter $rejectWriter,
         private readonly LogsImport $logger,
-        ) {
-    }
+        private readonly ?Closure $duplicateKeyResolver = null,
+    ) {}
 
     public function run(): ImportReport
     {
-          $this->logger->log('Import started');
-        $report = new ImportReport();
+        $this->logger->log('Import started');
+
+        $report = new ImportReport;
         $columnMap = null;
         $rowNumber = 0;
 
@@ -49,6 +51,7 @@ final class ImportPipeline
 
             if ($columnMap === null) {
                 $columnMap = $this->headerMapper->resolve($rawRow);
+
                 continue;
             }
 
@@ -56,40 +59,44 @@ final class ImportPipeline
 
             $this->validationEngine->validate($row);
 
-            if (!$row->isValid()) {
-                $report->recordRejected($rowNumber, $row->allErrors());
+            if (! $row->isValid()) {
+                $report->recordRejected($rowNumber, $row->allErrors(), $rawRow);
                 $this->rejectWriter->write($rowNumber, $row->allErrors());
+
                 continue;
             }
 
-            $keyValue = $row->field($this->duplicateCheckField)->sanitized ?? '';
+            $keyValue = $this->duplicateKeyResolver !== null
+                ? ($this->duplicateKeyResolver)($row)
+                : ($row->field($this->duplicateCheckField)->sanitized ?? '');
 
             if ($this->duplicateChecker->isDuplicate($keyValue)) {
-                $report->recordRejected($rowNumber, ['Duplicate row']);
+                $report->recordRejected($rowNumber, ['Duplicate row'], $rawRow);
                 $this->rejectWriter->write($rowNumber, ['Duplicate row']);
+
                 continue;
             }
 
-            $report->recordImported();
-            $this->outputWriter->write($row);
+            try {
+                $this->outputWriter->write($row);
+                $report->recordImported();
+            } catch (\Throwable $exception) {
+                $report->recordRejected($rowNumber, [$exception->getMessage()], $rawRow);
+                $this->rejectWriter->write($rowNumber, [$exception->getMessage()]);
+            }
         }
 
         $this->outputWriter->close();
         $this->rejectWriter->close();
+
         $this->logger->log("Import finished: {$report->importedCount()} imported, {$report->rejectedCount()} rejected");
-
-        $totalRows = $report->importedCount() + $report->rejectedCount();
-
-        if ($totalRows > 0 && ($report->rejectedCount() / $totalRows) > 0.5) {
-            $this->logger->log("WARNING: high rejection rate — {$report->rejectedCount()} of {$totalRows} rows rejected. Possible configuration issue.");
-        }
 
         return $report;
     }
 
     /**
-     * @param list<string> $rawRow
-     * @param array<int, string> $columnMap
+     * @param  list<string>  $rawRow
+     * @param  array<int, string>  $columnMap
      */
     private function buildRowContext(int $rowNumber, array $rawRow, array $columnMap): RowContext
     {
@@ -108,9 +115,10 @@ final class ImportPipeline
                 parseSuccess: $parseResult->success,
             );
 
-            if (!$parseResult->success) {
-    $field->addError("[parse] {$parseResult->error}");
-}
+            if (! $parseResult->success) {
+                $field->addError("[parse] {$parseResult->error}");
+            }
+
             $row->setField($fieldName, $field);
         }
 

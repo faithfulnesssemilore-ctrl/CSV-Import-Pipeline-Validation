@@ -10,12 +10,11 @@ final class NonNegativeRule implements ValidatesField
 {
     public function __construct(
         private readonly string $fieldLabel,
-    ) {
-    }
+    ) {}
 
     public function validate(FieldContext $field): ?string
     {
-        if (!$field->parseSuccess) {
+        if (! $field->parseSuccess) {
             return null;
         }
 

@@ -8,7 +8,7 @@ final class ImportReport
 {
     private int $importedCount = 0;
 
-    /** @var list<array{row: int, reasons: list<string>}> */
+    /** @var list<array{row: int, values: list<string>, reasons: list<string>}> */
     private array $rejections = [];
 
     public function recordImported(): void
@@ -16,9 +16,17 @@ final class ImportReport
         $this->importedCount++;
     }
 
-    public function recordRejected(int $rowNumber, array $reasons): void
+    /**
+     * @param  list<string>  $reasons
+     * @param  list<string>  $values
+     */
+    public function recordRejected(int $rowNumber, array $reasons, array $values = []): void
     {
-        $this->rejections[] = ['row' => $rowNumber, 'reasons' => $reasons];
+        $this->rejections[] = [
+            'row' => $rowNumber,
+            'values' => $values,
+            'reasons' => $reasons,
+        ];
     }
 
     public function importedCount(): int
@@ -31,9 +39,21 @@ final class ImportReport
         return count($this->rejections);
     }
 
-    /** @return list<array{row: int, reasons: list<string>}> */
+    /** @return list<array{row: int, values: list<string>, reasons: list<string>}> */
     public function rejections(): array
     {
         return $this->rejections;
+    }
+
+    /**
+     * @return array{imported: int, rejected: int, rejections: list<array{row: int, values: list<string>, reasons: list<string>}>}
+     */
+    public function toArray(): array
+    {
+        return [
+            'imported' => $this->importedCount(),
+            'rejected' => $this->rejectedCount(),
+            'rejections' => $this->rejections(),
+        ];
     }
 }

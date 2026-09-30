@@ -1,7 +1,8 @@
-<?php 
-declare(strict_types=1);
-namespace Semilore\CsvImportPipeline\Domain;
+<?php
 
+declare(strict_types=1);
+
+namespace Semilore\CsvImportPipeline\Domain;
 
 final class RowContext
 {
@@ -10,8 +11,7 @@ final class RowContext
 
     public function __construct(
         public readonly int $rowNumber,
-    ) {
-    }
+    ) {}
 
     public function setField(string $name, FieldContext $field): void
     {
@@ -23,6 +23,7 @@ final class RowContext
         return $this->fields[$name];
     }
 
+    /** @return array<string, FieldContext> */
     public function fields(): array
     {
         return $this->fields;
@@ -39,6 +40,7 @@ final class RowContext
         return true;
     }
 
+    /** @return list<string> */
     public function allErrors(): array
     {
         $errors = [];

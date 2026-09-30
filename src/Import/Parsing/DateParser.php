@@ -10,8 +10,7 @@ final class DateParser implements ParsesField
 {
     public function __construct(
         private readonly string $expectedFormat = 'Y-m-d',
-    ) {
-    }
+    ) {}
 
     public function parse(string $sanitized): ParseResult
     {

@@ -11,10 +11,17 @@ final class RejectWriter
 
     public function __construct(string $filePath)
     {
-        $this->handle = fopen($filePath, 'w');
+        $handle = fopen($filePath, 'w');
+
+        if ($handle === false) {
+            throw new \RuntimeException("Unable to open reject CSV: {$filePath}");
+        }
+
+        $this->handle = $handle;
         fputcsv($this->handle, ['row_number', 'reasons'], ',', '"', '\\');
     }
 
+    /** @param list<string> $reasons */
     public function write(int $rowNumber, array $reasons): void
     {
         fputcsv($this->handle, [$rowNumber, implode('; ', $reasons)], ',', '"', '\\');

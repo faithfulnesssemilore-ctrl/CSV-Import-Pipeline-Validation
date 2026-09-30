@@ -12,7 +12,7 @@ final class ValidationEngine
     private array $rulesByField;
 
     /**
-     * @param array<string, list<ValidatesField>> $rulesByField
+     * @param  array<string, list<ValidatesField>>  $rulesByField
      */
     public function __construct(array $rulesByField)
     {

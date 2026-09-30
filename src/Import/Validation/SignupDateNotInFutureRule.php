@@ -13,7 +13,7 @@ final class SignupDateNotInFutureRule implements ValidatesRow
     {
         $signupDateField = $row->field('signup_date');
 
-        if (!$signupDateField->parseSuccess) {
+        if (! $signupDateField->parseSuccess) {
             return null;
         }
 

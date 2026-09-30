@@ -10,8 +10,7 @@ final class RequiredRule implements ValidatesField
 {
     public function __construct(
         private readonly string $fieldLabel,
-    ) {
-    }
+    ) {}
 
     public function validate(FieldContext $field): ?string
     {

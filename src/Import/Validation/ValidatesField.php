@@ -10,4 +10,3 @@ interface ValidatesField
 {
     public function validate(FieldContext $field): ?string;
 }
-

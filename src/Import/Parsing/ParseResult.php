@@ -10,8 +10,7 @@ final class ParseResult
         public readonly bool $success,
         public readonly mixed $value,
         public readonly ?string $error,
-    ) {
-    }
+    ) {}
 
     public static function success(mixed $value): self
     {

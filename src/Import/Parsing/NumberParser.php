@@ -8,7 +8,7 @@ final class NumberParser implements ParsesField
 {
     public function parse(string $sanitized): ParseResult
     {
-        if (!is_numeric($sanitized)) {
+        if (! is_numeric($sanitized)) {
             return ParseResult::failure("'{$sanitized}' is not a valid number");
         }
 

@@ -10,15 +10,14 @@ final class CsvReader
 {
     public function __construct(
         private readonly string $filePath,
-    ) {
-    }
+    ) {}
 
     /**
      * @return \Generator<int, list<string>>
      */
     public function rows(): \Generator
     {
-        if (!file_exists($this->filePath)) {
+        if (! file_exists($this->filePath)) {
             throw new RuntimeException("File does not exist: {$this->filePath}");
         }
 

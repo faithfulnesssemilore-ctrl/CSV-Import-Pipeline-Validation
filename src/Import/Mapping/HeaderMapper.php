@@ -9,15 +9,14 @@ use RuntimeException;
 final class HeaderMapper
 {
     /**
-     * @param array<string, list<string>> $aliases canonical field name => list of accepted header labels
+     * @param  array<string, list<string>>  $aliases  canonical field name => list of accepted header labels
      */
     public function __construct(
         private readonly array $aliases,
-    ) {
-    }
+    ) {}
 
     /**
-     * @param list<string> $headerRow the actual header row read from the file
+     * @param  list<string>  $headerRow  the actual header row read from the file
      * @return array<int, string> column index => canonical field name
      */
     public function resolve(array $headerRow): array
@@ -48,6 +47,7 @@ final class HeaderMapper
         return null;
     }
 
+    /** @param array<int, string> $columnMap */
     private function assertAllRequiredFieldsFound(array $columnMap): void
     {
         $foundFields = array_values($columnMap);
