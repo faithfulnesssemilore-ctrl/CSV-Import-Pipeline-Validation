@@ -12,9 +12,6 @@ final class CsvReader
         private readonly string $filePath,
     ) {}
 
-    /**
-     * @return \Generator<int, list<string>>
-     */
     public function rows(): \Generator
     {
         if (! file_exists($this->filePath)) {

@@ -20,7 +20,9 @@ THe Solution was designed to meet the following goals:
 
 ---
 ## Acheitectural Overview 
- Configuration
+---
+Architecture Overview
+Configuration
        |
        V
    ConfigurationValidator → validates the import setup before runtime process begins 
@@ -29,10 +31,10 @@ THe Solution was designed to meet the following goals:
 CSV Reader(streaming) → Reads the file as a generator 1 row at a time 
 |
   V
-HeaderMapper → runs only on the first role of the csv file  
+HeaderMapper → runs only on the first row of the csv file  
 |
 V
-Sanitizer-> in importpipeline::RowContex() each fields value is sanitized using the configured sanitizer for the canonical field 
+Sanitizer-> in importpipeline::buildRowContext() each fields value is sanitized using the configured sanitizer for the canonical field 
 |
        V
 Parsing/canonical - IN buildRowContext(), the sanitize value is parsed i into a single standard accepted  internal name or format 
